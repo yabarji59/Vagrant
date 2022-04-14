@@ -1,0 +1,35 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/ubuntu2010"
+  config.vm.network "private_network", ip: "192.168.56.10"
+
+  # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.synced_folder ".", "/var/www/project"
+
+   config.vm.provider "virtualbox" do |v|
+     v.name = "Devbox-Github"
+     # Display the VirtualBox GUI when booting the machine
+     v.gui = true
+
+     # Customize the amount of memory on the VM:
+     v.memory = "1024"
+   end
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y g++
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    node -v
+    sudo apt-get install npm
+    npm install -g npm@8.6.0
+    npm -v
+    apt-get install -y build-essential
+    sudo apt install cinnamon-desktop-environment
+    npm install express
+    su vagrant
+    mkdir /home/vagrant/node_modules
+    cd /var/www/project
+    ln -s /home/vagrant/node_modules/ node_modules
+  SHELL
+end
